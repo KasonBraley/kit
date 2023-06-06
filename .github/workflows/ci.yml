@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+
+      - name: Verify Dependencies
+        run: go mod verify
+
+      - name: check that 'go mod tidy' is clean
+        run: |
+          go mod tidy
+          git diff --name-only --exit-code || (echo "Please run 'go mod tidy'."; exit 1)
+
+      - name: Golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: "latest"
+          # this format is used to also display the file & line number in the workflow's output
+          # without this, lint errors are only displayed in the "Files changed" tab
+          # see this issue for more information
+          # https://github.com/golangci/golangci-lint-action/issues/119
+          args: --timeout=5m --out-${NO_FUTURE}format colored-line-number
