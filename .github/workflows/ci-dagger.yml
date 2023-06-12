@@ -1,0 +1,31 @@
+name: CI-Dagger
+
+on:
+  push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+
+      - name: Lint
+        run: |
+          cd ci
+          go run main.go -w ../ lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+
+      - name: Test
+        run: |
+          cd ci
+          go run main.go -w ../ test
